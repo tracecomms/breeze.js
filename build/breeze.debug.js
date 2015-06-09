@@ -414,7 +414,20 @@ function __requireLib(libNames, errMessage) {
 // Returns the 'libName' module if loaded or else returns undefined
 function __requireLibCore(libName) {
   var window = global.window;
-  if (!window) return; // Must run in a browser. Todo: add commonjs support
+//if (!window) return; // Must run in a browser. Todo: add commonjs support
+
+  // HACKY PATCH - to get this to work in node
+    // the libname change is to make sure it works on heroku, as heroku has 'Q' as 'q'
+    if (!window) {
+        try {
+            if (libName === 'Q') {
+                libName = 'q';
+            }
+            return require(libName);
+        } catch (e) {
+            return null;
+        }
+    }
 
   // get library from browser globals if we can
   var lib = window[libName];
